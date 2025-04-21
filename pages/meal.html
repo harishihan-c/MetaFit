@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MetaFit | Meal Plans</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- Navbar -->
+<nav class="flex items-center justify-between p-4 bg-white shadow-md sticky top-0 z-50">
+  <div class="text-2xl font-bold text-blue-600">MetaFit</div>
+  <div class="hidden md:flex space-x-6 text-sm font-medium">
+    <a href="meal.html" class="text-blue-600">Meals</a>
+    <a href="workout.html" class="hover:text-blue-500">Workouts</a>
+    <a href="mental.html" class="hover:text-blue-500">Mental Health</a>
+    <a href="community.html" class="hover:text-blue-500">Community</a>
+  </div>
+</nav>
+
+<!-- Content -->
+<section class="max-w-5xl mx-auto py-10 px-4">
+  <h1 class="text-3xl font-bold mb-6">🍽️ Personalized Meal Plans</h1>
+  <p class="text-gray-600 mb-6">Choose a plan that fits your lifestyle and goals.</p>
+
+  <div class="grid gap-6 grid-cols-1 md:grid-cols-2">
+    <div class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-xl font-semibold mb-2">🥗 Weight Loss Plan</h2>
+      <ul class="text-gray-700 list-disc ml-5">
+        <li>Breakfast: Greek yogurt with berries</li>
+        <li>Lunch: Grilled chicken salad</li>
+        <li>Dinner: Baked salmon with vegetables</li>
+      </ul>
+    </div>
+    <div class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-xl font-semibold mb-2">🍠 Muscle Gain Plan</h2>
+      <ul class="text-gray-700 list-disc ml-5">
+        <li>Breakfast: Oats with banana & peanut butter</li>
+        <li>Lunch: Brown rice, chicken & avocado</li>
+        <li>Dinner: Quinoa with beans & veggies</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mt-8 text-center">
+    <button onclick="alert('More recipes coming soon!')" class="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Explore Recipes</button>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="text-center py-6 mt-10 bg-white shadow-inner">
+  <p class="text-sm">&copy; 2025 MetaFit. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

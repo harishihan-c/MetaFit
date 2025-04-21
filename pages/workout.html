@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MetaFit | Workout Routines</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- Navbar -->
+<nav class="flex items-center justify-between p-4 bg-white shadow-md sticky top-0 z-50">
+  <div class="text-2xl font-bold text-blue-600">MetaFit</div>
+  <div class="hidden md:flex space-x-6 text-sm font-medium">
+    <a href="meal.html" class="hover:text-blue-500">Meals</a>
+    <a href="workout.html" class="text-blue-600">Workouts</a>
+    <a href="mental.html" class="hover:text-blue-500">Mental Health</a>
+    <a href="community.html" class="hover:text-blue-500">Community</a>
+  </div>
+</nav>
+
+<!-- Content -->
+<section class="max-w-5xl mx-auto py-10 px-4">
+  <h1 class="text-3xl font-bold mb-6">💪 Workout Routines</h1>
+  <p class="text-gray-600 mb-6">Tailored workouts for every fitness level.</p>
+
+  <div class="grid gap-6 grid-cols-1 md:grid-cols-2">
+    <div class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-xl font-semibold mb-2">🏃 Beginner Plan</h2>
+      <ul class="text-gray-700 list-disc ml-5">
+        <li>Jumping Jacks - 2 mins</li>
+        <li>Bodyweight Squats - 3 sets of 10</li>
+        <li>Plank - 30 sec</li>
+      </ul>
+    </div>
+    <div class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-xl font-semibold mb-2">🏋️ Intermediate Plan</h2>
+      <ul class="text-gray-700 list-disc ml-5">
+        <li>Push-ups - 3 sets of 15</li>
+        <li>Lunges - 3 sets of 12 each leg</li>
+        <li>Mountain Climbers - 2 mins</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mt-8 text-center">
+    <button onclick="alert('Advanced plan coming soon!')" class="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Advanced Plan</button>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="text-center py-6 mt-10 bg-white shadow-inner">
+  <p class="text-sm">&copy; 2025 MetaFit. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
