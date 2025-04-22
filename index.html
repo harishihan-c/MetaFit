@@ -36,12 +36,28 @@
   <!-- Current Stats -->
   <div class="bg-white shadow rounded-2xl p-6">
     <h2 class="text-xl font-semibold mb-4">Your Progress</h2>
-    <div class="space-y-4">
-      <p class="text-lg">👤 <strong>Name:</strong> John Doe</p>
-      <p class="text-lg">⚖️ <strong>Current Weight:</strong> <span id="currentWeight">72</span> kg</p>
-      <p class="text-lg">🎯 <strong>Target Weight:</strong> <span id="targetWeight">65</span> kg</p>
-      <p class="text-lg">📏 <strong>Height:</strong> 175 cm</p>
-    </div>
+      <div class="space-y-6">
+          <!-- Column: Name, Age, Height -->
+          <div class="space-y-2 mb-10 mt-8">
+              <p class="text-lg">👤 <strong>Name:</strong> John Doe</p>
+              <p class="text-lg">🧓 <strong>Age:</strong> 28</p>
+              <p class="text-lg">📏 <strong>Height:</strong> 175 cm</p>
+          </div>
+
+          <!-- Two Columns: Weight & Calorie -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 ">
+              <div class="space-y-3">
+                  <p class="text-lg">⚖️ <strong>Current Weight:</strong> <span id="currentWeight">72</span> kg</p>
+                  <p class="text-lg">🔥 <strong>Current Calorie:</strong> <span id="currentCalorie">2200</span> kcal</p>
+              </div>
+              <div class="space-y-3">
+                  <p class="text-lg">🎯 <strong>Target Weight:</strong> <span id="targetWeight">65</span> kg</p>
+                  <p class="text-lg">🎯 <strong>Target Calorie:</strong> <span id="targetCalorie">2000</span> kcal</p>
+              </div>
+          </div>
+      </div>
+
+
   </div>
 
   <!-- Graph -->
@@ -58,17 +74,37 @@
     type: 'line',
     data: {
       labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-      datasets: [{
-        label: 'Weight (kg)',
-        data: [75, 73, 72, 72], // Example weight data
-        borderColor: '#3B82F6',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        fill: true,
-        tension: 0.4,
-        pointRadius: 5,
-      }]
-    },
-    options: {
+        datasets: [
+            {
+                label: 'Weight (kg)',
+                data: [75, 73, 72, 72],
+                borderColor: '#3B82F6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+            },
+            {
+                label: 'Current Calorie (kcal)',
+                data: [2300, 2250, 2200, 2200],
+                borderColor: '#10B981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+            },
+            {
+                label: 'Target Calorie (kcal)',
+                data: [2000, 2000, 2000, 2000],
+                borderColor: '#F59E0B',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                fill: false,
+                borderDash: [5, 5],
+                tension: 0.4,
+                pointRadius: 5,
+            }
+        ],
+        options: {
       responsive: true,
       plugins: {
         legend: {
@@ -92,7 +128,7 @@
         }
       }
     }
-  });
+  }});
 </script>
 </body>
 </html>
