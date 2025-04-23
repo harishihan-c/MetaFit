@@ -49,6 +49,17 @@
 <footer class="text-center py-6 mt-10 bg-white shadow-inner">
   <p class="text-sm">&copy; 2025 MetaFit. All rights reserved.</p>
 </footer>
+<script>
+  document.querySelector('button').addEventListener('click', async () => {
+    const content = document.querySelector('textarea').value;
+    await fetch('http://localhost:5000/api/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: 'Anonymous', content })
+    });
+    alert('Post submitted!');
+  });
 
+</script>
 </body>
 </html>
