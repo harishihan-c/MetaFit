@@ -6,7 +6,6 @@
   <title>MetaFit Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
 <body class="bg-gray-50 text-gray-800">
 
@@ -36,28 +35,26 @@
   <!-- Current Stats -->
   <div class="bg-white shadow rounded-2xl p-6">
     <h2 class="text-xl font-semibold mb-4">Your Progress</h2>
-      <div class="space-y-6">
-          <!-- Column: Name, Age, Height -->
-          <div class="space-y-2 mb-10 mt-8">
-              <p class="text-lg">👤 <strong>Name:</strong> John Doe</p>
-              <p class="text-lg">🧓 <strong>Age:</strong> 28</p>
-              <p class="text-lg">📏 <strong>Height:</strong> 175 cm</p>
-          </div>
-
-          <!-- Two Columns: Weight & Calorie -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 ">
-              <div class="space-y-3">
-                  <p class="text-lg">⚖️ <strong>Current Weight:</strong> <span id="currentWeight">72</span> kg</p>
-                  <p class="text-lg">🔥 <strong>Current Calorie:</strong> <span id="currentCalorie">2200</span> kcal</p>
-              </div>
-              <div class="space-y-3">
-                  <p class="text-lg">🎯 <strong>Target Weight:</strong> <span id="targetWeight">65</span> kg</p>
-                  <p class="text-lg">🎯 <strong>Target Calorie:</strong> <span id="targetCalorie">2000</span> kcal</p>
-              </div>
-          </div>
+    <div class="space-y-6">
+      <!-- Column: Name, Age, Height -->
+      <div class="space-y-2 mb-10 mt-8">
+        <p class="text-lg">👤 <strong id="userName">Loading...</strong></p>
+        <p class="text-lg">🧓 <strong id="userAge">...</strong></p>
+        <p class="text-lg">📏 <strong id="userHeight">...</strong></p>
       </div>
 
-
+      <!-- Two Columns: Weight & Calorie -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 ">
+        <div class="space-y-3">
+          <p class="text-lg">⚖️ <strong>Current Weight:</strong> <span id="currentWeight">...</span> kg</p>
+          <p class="text-lg">🔥 <strong>Current Calorie:</strong> <span id="currentCalorie">...</span> kcal</p>
+        </div>
+        <div class="space-y-3">
+          <p class="text-lg">🎯 <strong>Target Weight:</strong> <span id="targetWeight">...</span> kg</p>
+          <p class="text-lg">🎯 <strong>Target Calorie:</strong> <span id="targetCalorie">...</span> kcal</p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Graph -->
@@ -66,72 +63,6 @@
     <canvas id="weightChart" height="200"></canvas>
   </div>
 </div>
-
-<!-- Chart Script -->
-<script>
-  const ctx = document.getElementById('weightChart').getContext('2d');
-  const weightChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-        datasets: [
-            {
-                label: 'Weight (kg)',
-                data: [75, 73, 72, 72],
-                borderColor: '#3B82F6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                fill: true,
-                tension: 0.4,
-                pointRadius: 5,
-            },
-            {
-                label: 'Current Calorie (kcal)',
-                data: [2300, 2250, 2200, 2200],
-                borderColor: '#10B981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                fill: true,
-                tension: 0.4,
-                pointRadius: 5,
-            },
-            {
-                label: 'Target Calorie (kcal)',
-                data: [2000, 2000, 2000, 2000],
-                borderColor: '#F59E0B',
-                backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                fill: false,
-                borderDash: [5, 5],
-                tension: 0.4,
-                pointRadius: 5,
-            }
-        ],
-        options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: true,
-          labels: {
-            color: '#1F2937'
-          }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: false,
-          ticks: {
-            color: '#1F2937'
-          }
-        },
-        x: {
-          ticks: {
-            color: '#1F2937'
-          }
-        }
-      }
-    }
-  }});
-</script>
-</body>
-</html>
 
 <!-- Cards -->
 <section class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 p-6 max-w-6xl mx-auto">
@@ -201,30 +132,119 @@
   </div>
 </footer>
 
-<!-- Scripts -->
+
+<!-- Chart Script -->
 <script>
-  function openCalorieCalculator() {
-    document.getElementById('calorie-modal').classList.remove('hidden');
-  }
+  const ctx = document.getElementById('weightChart').getContext('2d');
+  const weightChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+      datasets: [
+        {
+          label: 'Weight (kg)',
+          data: [75, 73, 72, 72],
+          borderColor: '#3B82F6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 5,
+        },
+        {
+          label: 'Current Calorie (kcal)',
+          data: [2300, 2250, 2200, 2200],
+          borderColor: '#10B981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 5,
+        },
+        {
+          label: 'Target Calorie (kcal)',
+          data: [2000, 2000, 2000, 2000],
+          borderColor: '#F59E0B',
+          backgroundColor: 'rgba(245, 158, 11, 0.1)',
+          fill: false,
+          borderDash: [5, 5],
+          tension: 0.4,
+          pointRadius: 5,
+        }
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            color: '#1F2937'
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: false,
+          ticks: {
+            color: '#1F2937'
+          }
+        },
+        x: {
+          ticks: {
+            color: '#1F2937'
+          }
+        }
+      }
+    }
+  });
+</script>
 
-  function closeCalorieCalculator() {
-    document.getElementById('calorie-modal').classList.add('hidden');
-  }
+<!-- Keep this after your dashboard HTML -->
+<div id="loginWarning" class="text-center text-red-600 font-semibold mt-4 hidden">
+  You are not logged in. Please <a href="login.html" class="underline text-blue-600">log in</a>.
+</div>
 
-  function calculateCalories() {
-    const age = +document.getElementById('age').value;
-    const weight = +document.getElementById('weight').value;
-    const height = +document.getElementById('height').value;
-    const activity = +document.getElementById('activity').value;
-    if (!age || !weight || !height) {
-      alert('Please fill in all fields');
+<script>
+  async function fetchUserInfo() {
+    const email = localStorage.getItem("userEmail");
+    const warningBox = document.getElementById("loginWarning");
+
+    if (!email) {
+      warningBox.classList.remove("hidden");
       return;
     }
-    const bmr = 10 * weight + 6.25 * height - 5 * age + 5;
-    const calories = bmr * activity;
-    document.getElementById('calorie-result').innerText = `You need about ${Math.round(calories)} calories/day.`;
+
+    try {
+      const res = await fetch("http://localhost/metafit/api/get_user.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        document.getElementById("userName").textContent = data.name;
+        document.getElementById("userAge").textContent = `Age: ${data.age}`;
+        document.getElementById("userHeight").textContent = `Height: ${data.height} cm`;
+        document.getElementById("currentWeight").textContent = data.weight;
+        document.getElementById("targetWeight").textContent = data.target_weight;
+        document.getElementById("currentCalorie").textContent = data.calorie_current;
+        document.getElementById("targetCalorie").textContent = data.calorie_target;
+      } else {
+        warningBox.textContent = "User not found.";
+        warningBox.classList.remove("hidden");
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+      warningBox.textContent = "An error occurred.";
+      warningBox.classList.remove("hidden");
+    }
   }
+
+  fetchUserInfo();
 </script>
+
 
 </body>
 </html>
+
+

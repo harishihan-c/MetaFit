@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register - MetaFit</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+
+<div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+  <h2 class="text-2xl font-bold text-blue-600 mb-6 text-center">Create Your MetaFit Account</h2>
+  <form>
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700">Full Name</label>
+      <input type="text" class="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+    </div>
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700">Email</label>
+      <input type="email" class="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+    </div>
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700">Password</label>
+      <input type="password" class="w-full border border-gray-300 rounded px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+    </div>
+    <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">Register</button>
+    <p class="mt-4 text-center text-sm text-gray-600">Already have an account? <a href="login.html" class="text-blue-600 hover:underline">Login</a></p>
+  </form>
+
+  <!-- Success or error message -->
+  <p id="message" class="text-center text-sm mt-4"></p>
+</div>
+
+<script>
+  document.querySelector("form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const name = e.target[0].value;
+    const email = e.target[1].value;
+    const password = e.target[2].value;
+    const messageEl = document.getElementById("message");
+
+    const res = await fetch("http://localhost/metafit/api/register.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      messageEl.textContent = "Registered successfully!";
+      messageEl.className = "text-green-600 text-center text-sm mt-4";
+
+      // Redirect to onboarding after delay
+      setTimeout(() => {
+        // Save email to localStorage (needed for onboarding)
+        localStorage.setItem("userEmail", email);
+        window.location.href = "../onboarding.html";
+      }, 1500);
+    }
+
+  });
+</script>
+
+</body>
+</html>

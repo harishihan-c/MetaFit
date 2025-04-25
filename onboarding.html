@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to MetaFit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- Navbar -->
+<nav class="flex items-center justify-between p-4 bg-white shadow-md">
+    <div class="text-2xl font-bold text-blue-600">MetaFit</div>
+</nav>
+
+<!-- Onboarding Section -->
+<!-- Keep the same head and navbar as before -->
+
+<!-- Keep existing layout/navbar -->
+
+<section class="max-w-xl mx-auto p-8 mt-10 bg-white rounded-2xl shadow">
+    <h1 class="text-3xl font-semibold text-center mb-6">👋 Welcome to MetaFit</h1>
+    <p class="text-center text-gray-600 mb-8">Let’s personalize your experience to help you reach your goals.</p>
+
+    <div class="space-y-4">
+        <input type="text" id="name" placeholder="Name" class="w-full border p-2 rounded" />
+        <label class="block text-gray-700 font-medium">Birthday:</label>
+        <input type="date" id="dob" class="w-full border p-2 rounded" />
+        <input type="number" id="height" placeholder="Height (cm)" class="w-full border p-2 rounded" />
+        <input type="number" id="weight" placeholder="Current Weight (kg)" class="w-full border p-2 rounded" />
+        <input type="number" id="target" placeholder="Target Weight (kg)" class="w-full border p-2 rounded" />
+        <select id="activity" class="w-full border p-2 rounded">
+            <option value="1.2">Sedentary</option>
+            <option value="1.375">Lightly Active</option>
+            <option value="1.55">Moderately Active</option>
+            <option value="1.725">Very Active</option>
+            <option value="1.9">Super Active</option>
+        </select>
+        <button onclick="submitData()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Get My Plan</button>
+    </div>
+
+    <div class="mt-6 text-center hidden" id="result">
+        <h2 class="text-xl font-semibold mb-2">🎯 Your Calorie Breakdown</h2>
+        <p class="text-gray-700">Age: <span id="ageOutput"></span> years</p>
+        <p class="text-gray-700">Current Calories: <span id="currentCal"></span> kcal/day</p>
+        <p class="text-gray-700">Target Calories: <span id="targetCal"></span> kcal/day</p>
+
+        <div class="mt-6">
+            <h3 class="text-lg font-semibold mb-2">📅 Weight Loss Projection</h3>
+            <canvas id="projectionChart" height="200"></canvas>
+        </div>
+
+        <div class="mt-6">
+            <h3 class="text-lg font-semibold mb-2">🍽 Suggested Meal Ideas</h3>
+            <ul id="mealSuggestions" class="text-left list-disc list-inside text-gray-600 space-y-1"></ul>
+        </div>
+
+        <div class="mt-6 space-x-4">
+            <a href="Pages/meal.html" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">View Meal Plan</a>
+            <a href="Pages/workout.html" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Workout Plan</a>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+
+
+    const mealDatabase = [
+        { name: "Grilled Chicken Salad", calories: 400 },
+        { name: "Oatmeal with Berries", calories: 350 },
+        { name: "Quinoa Bowl with Veggies", calories: 450 },
+        { name: "Tuna Wrap with Greek Yogurt", calories: 500 },
+        { name: "Smoothie with Protein", calories: 300 },
+        { name: "Stir-fry Tofu with Brown Rice", calories: 450 }
+    ];
+
+    function calculateAge(birthDateStr) {
+        const today = new Date();
+        const birthDate = new Date(birthDateStr);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
+
+    function submitData() {
+        const dob = document.getElementById('dob').value;
+        const age = calculateAge(dob);
+        const weight = +document.getElementById('weight').value;
+        const targetWeight = +document.getElementById('target').value;
+        const height = +document.getElementById('height').value;
+        const activity = +document.getElementById('activity').value;
+
+        if (!dob || !weight || !targetWeight || !height || !activity) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        const bmrCurrent = 10 * weight + 6.25 * height - 5 * age + 5;
+        const bmrTarget = 10 * targetWeight + 6.25 * height - 5 * age + 5;
+
+        const calCurrent = Math.round(bmrCurrent * activity);
+        const calTarget = Math.round(bmrTarget * activity);
+
+        document.getElementById('ageOutput').textContent = age;
+        document.getElementById('currentCal').textContent = calCurrent;
+        document.getElementById('targetCal').textContent = calTarget;
+
+        const mealSuggestions = mealDatabase
+            .filter(meal => meal.calories <= calTarget / 3)
+            .slice(0, 3);
+
+        const list = document.getElementById('mealSuggestions');
+        list.innerHTML = '';
+        mealSuggestions.forEach(meal => {
+            const li = document.createElement('li');
+            li.textContent = `${meal.name} — ${meal.calories} kcal`;
+            list.appendChild(li);
+        });
+
+        drawProjectionChart(weight, targetWeight);
+        document.getElementById('result').classList.remove('hidden');
+
+        const payload = {
+            email: email, // added here
+            dob: document.getElementById('dob').value,
+            age: age,
+            height: +document.getElementById('height').value,
+            weight: +document.getElementById('weight').value,
+            targetWeight: +document.getElementById('target').value,
+            activityLevel: +document.getElementById('activity').value,
+            calorieCurrent: calCurrent,
+            calorieTarget: calTarget
+        };
+
+
+        const email = localStorage.getItem("userEmail");
+        if (!email) {
+            alert("No email found. Please register or log in again.");
+            window.location.href = "register.html";
+            return;
+        }
+
+        fetch('http://localhost/metafit/api/update_user_profile.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("✅ Saved to PHP:", data);
+            })
+            .catch(err => {
+                console.error("❌ Failed to save:", err);
+            });
+
+
+    }
+
+    function drawProjectionChart(current, target) {
+        const weeks = Math.ceil(Math.abs(current - target) / 0.5);
+        const labels = Array.from({ length: weeks }, (_, i) => `Week ${i + 1}`);
+        const data = Array.from({ length: weeks }, (_, i) => current - 0.5 * i);
+
+        const ctx = document.getElementById('projectionChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Projected Weight (kg)',
+                    data: data,
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+    }
+
+
+
+</script>
+
+</body>
+</html>
