@@ -39,25 +39,36 @@
     const password = e.target[2].value;
     const messageEl = document.getElementById("message");
 
-    const res = await fetch("http://localhost/metafit/api/register.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
+    try {
+      const res = await fetch("http://localhost/metafit/api/register.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    const data = await res.json();
-    if (res.ok) {
-      messageEl.textContent = "Registered successfully!";
-      messageEl.className = "text-green-600 text-center text-sm mt-4";
+      const data = await res.json();
+      console.log("Response from server:", data); // <-- Add this line to see full response
 
-      // Redirect to onboarding after delay
-      setTimeout(() => {
+      if (res.ok && data.success) { // <-- Check if server says "success"
+        messageEl.textContent = "Registered successfully!";
+        messageEl.className = "text-green-600 text-center text-sm mt-4";
+
         // Save email to localStorage (needed for onboarding)
         localStorage.setItem("userEmail", email);
-        window.location.href = "../onboarding.html";
-      }, 1500);
-    }
 
+        // Redirect after short delay
+        setTimeout(() => {
+          window.location.href = "../onboarding.html"; // <- Fix path if needed
+        }, 1500);
+      } else {
+        messageEl.textContent = data.message || "Registration failed.";
+        messageEl.className = "text-red-600 text-center text-sm mt-4";
+      }
+    } catch (err) {
+      console.error("❌ Error:", err);
+      messageEl.textContent = "Server error. Please try again later.";
+      messageEl.className = "text-red-600 text-center text-sm mt-4";
+    }
   });
 </script>
 

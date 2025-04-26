@@ -12,6 +12,7 @@ header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Methods: POST");
 header("Content-Type: application/json");
 
+session_start();  // 👈 Add this!
 
 $conn = new mysqli("localhost", "root", "", "metafit");
 if ($conn->connect_error) {
@@ -39,7 +40,12 @@ if (!password_verify($password, $user["password"])) {
   exit();
 }
 
-// On success (optional: generate token)
+// ✅ SAVE LOGIN INFO IN SESSION
+$_SESSION['email'] = $user["email"];
+$_SESSION['username'] = $user["name"];
+$_SESSION['user_id'] = $user["id"];
+
+// On success
 echo json_encode([
   "msg" => "Login successful",
   "user" => [
@@ -48,5 +54,6 @@ echo json_encode([
     "email" => $user["email"]
   ]
 ]);
+
 $conn->close();
 ?>

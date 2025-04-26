@@ -9,22 +9,54 @@
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-<!-- Navbar -->
-<nav class="flex items-center justify-between p-4 bg-white shadow-md sticky top-0 z-50">
-  <div class="text-2xl font-bold text-blue-600">MetaFit</div>
-  <div class="hidden md:flex space-x-6 text-sm font-medium">
+<nav class="relative flex items-center justify-between p-4 bg-white shadow-md sticky top-0 z-50">
+  <!-- Logo (Left) -->
+  <div class="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-3">
+    <img src="./Logo/MetaFit%20Logo.png" alt="MetaFit Logo" class="w-10 h-10">
+    <div class="text-2xl font-bold text-blue-600">MetaFit</div>
+  </div>
+
+  <!-- Navigation Links (Middle) -->
+  <div class="mx-auto hidden md:flex space-x-8 text-sm font-medium">
     <a href="./Pages/meal.html" class="hover:text-blue-500">Meals</a>
     <a href="./Pages/workout.html" class="hover:text-blue-500">Workouts</a>
     <a href="./Pages/mental.html" class="hover:text-blue-500">Mental Health</a>
     <a href="./Pages/community.html" class="hover:text-blue-500">Community</a>
-    <a href="./Pages/weight.html" class="hover:text-blue-500">Weight</a>
   </div>
-  <div>
-    <img src="https://www.svgrepo.com/show/51234/user.svg" alt="Profile" class="w-8 h-8 rounded-full" />
+
+  <!-- Profile Picture (Right) -->
+  <div class="relative flex items-center space-x-4">
+    <img id="profilePic" src="./Logo/user.png" alt="Profile" class="w-9 h-9 rounded-full object-cover cursor-pointer">
+
+    <!-- Dropdown Menu -->
+    <div id="dropdownMenu" class="hidden absolute right-0 mt-24 w-32 bg-white border rounded-md shadow-lg z-50">
+      <button onclick="logout()" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Logout</button>
+    </div>
   </div>
 </nav>
+  <script>
+    const profilePic = document.getElementById('profilePic');
+    const dropdownMenu = document.getElementById('dropdownMenu');
 
-<!-- Welcome Section -->
+    profilePic.addEventListener('click', (event) => {
+      event.stopPropagation(); // Important! Stop click from bubbling up
+      dropdownMenu.classList.toggle('hidden');
+    });
+
+    // Clicking anywhere else hides the dropdown
+    document.addEventListener('click', function(event) {
+      if (!dropdownMenu.contains(event.target)) {
+        dropdownMenu.classList.add('hidden');
+      }
+    });
+
+    // Logout function
+    function logout() {
+      window.location.href = './Account/login.html';
+    }
+  </script>
+
+  <!-- Welcome Section -->
 <section class="text-center py-10 px-4">
   <h1 class="text-4xl font-bold mb-2">Welcome to MetaFit</h1>
   <p class="text-lg text-gray-600">Your personal health and wellness dashboard</p>
@@ -131,79 +163,15 @@
     <a href="#community" class="hover:underline">Community</a>
   </div>
 </footer>
-
+<!-- Keep this after your dashboard HTML -->
+<div id="loginWarning" class="text-center text-red-600 font-semibold mt-4 hidden">
+  You are not logged in. Please <a href="./Account/login.html" class="underline text-blue-600">log in</a>.
+</div>
 
 <!-- Chart Script -->
 <script>
-  const ctx = document.getElementById('weightChart').getContext('2d');
-  const weightChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-      datasets: [
-        {
-          label: 'Weight (kg)',
-          data: [75, 73, 72, 72],
-          borderColor: '#3B82F6',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
-          fill: true,
-          tension: 0.4,
-          pointRadius: 5,
-        },
-        {
-          label: 'Current Calorie (kcal)',
-          data: [2300, 2250, 2200, 2200],
-          borderColor: '#10B981',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)',
-          fill: true,
-          tension: 0.4,
-          pointRadius: 5,
-        },
-        {
-          label: 'Target Calorie (kcal)',
-          data: [2000, 2000, 2000, 2000],
-          borderColor: '#F59E0B',
-          backgroundColor: 'rgba(245, 158, 11, 0.1)',
-          fill: false,
-          borderDash: [5, 5],
-          tension: 0.4,
-          pointRadius: 5,
-        }
-      ],
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: true,
-          labels: {
-            color: '#1F2937'
-          }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: false,
-          ticks: {
-            color: '#1F2937'
-          }
-        },
-        x: {
-          ticks: {
-            color: '#1F2937'
-          }
-        }
-      }
-    }
-  });
-</script>
+  let weightChart; // Declare outside
 
-<!-- Keep this after your dashboard HTML -->
-<div id="loginWarning" class="text-center text-red-600 font-semibold mt-4 hidden">
-  You are not logged in. Please <a href="login.html" class="underline text-blue-600">log in</a>.
-</div>
-
-<script>
   async function fetchUserInfo() {
     const email = localStorage.getItem("userEmail");
     const warningBox = document.getElementById("loginWarning");
@@ -229,6 +197,8 @@
         document.getElementById("targetWeight").textContent = data.target_weight;
         document.getElementById("currentCalorie").textContent = data.calorie_current;
         document.getElementById("targetCalorie").textContent = data.calorie_target;
+
+        generateWeightGraph(data.weight, data.target_weight, data.calorie_current, data.calorie_target);
       } else {
         warningBox.textContent = "User not found.";
         warningBox.classList.remove("hidden");
@@ -240,8 +210,90 @@
     }
   }
 
-  fetchUserInfo();
+  function generateWeightGraph(currentWeight, targetWeight, currentCalorie, targetCalorie) {
+    const weeksNeeded = Math.ceil(Math.abs(currentWeight - targetWeight) / 0.5); // Assuming 0.5kg per week
+    const labels = [];
+    const weightData = [];
+    const calorieData = [];
+    const targetCalorieData = [];
+
+    let weight = parseFloat(currentWeight);
+    const weightChangePerWeek = weight > targetWeight ? -0.5 : 0.5; // Weight loss or gain
+
+    for (let i = 1; i <= weeksNeeded; i++) {
+      labels.push(`Week ${i}`);
+      weight += weightChangePerWeek;
+      if ((weightChangePerWeek < 0 && weight < targetWeight) || (weightChangePerWeek > 0 && weight > targetWeight)) {
+        weight = targetWeight;
+      }
+      weightData.push(parseFloat(weight.toFixed(1)));
+      calorieData.push(parseFloat(currentCalorie)); // Assume same calorie till update
+      targetCalorieData.push(parseFloat(targetCalorie));
+    }
+
+    const ctx = document.getElementById('weightChart').getContext('2d');
+    if (weightChart) {
+      weightChart.destroy(); // Destroy old chart if exists
+    }
+    weightChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Weight (kg)',
+            data: weightData,
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 5,
+          },
+          {
+            label: 'Current Calorie (kcal)',
+            data: calorieData,
+            borderColor: '#10B981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 5,
+          },
+          {
+            label: 'Target Calorie (kcal)',
+            data: targetCalorieData,
+            borderColor: '#F59E0B',
+            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+            fill: false,
+            borderDash: [5, 5],
+            tension: 0.4,
+            pointRadius: 5,
+          }
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+            labels: { color: '#1F2937' }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            ticks: { color: '#1F2937' }
+          },
+          x: {
+            ticks: { color: '#1F2937' }
+          }
+        }
+      }
+    });
+  }
+
+  fetchUserInfo(); // Always call when page loads
 </script>
+
 
 
 </body>

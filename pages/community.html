@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,38 +10,64 @@
 <body class="bg-gray-50 text-gray-800">
 
 <!-- Navbar -->
-<nav class="flex items-center justify-between p-4 bg-white shadow-md sticky top-0 z-50">
-  <div class="text-2xl font-bold text-blue-600"><a href="../index.html">MetaFit</a></div>
-  <div class="hidden md:flex space-x-6 text-sm font-medium">
+<nav class="relative flex items-center justify-between p-4 bg-white shadow-md sticky top-0 z-50">
+  <div class="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-3">
+    <img src="../Logo/MetaFit%20Logo.png" alt="MetaFit Logo" class="w-10 h-10">
+    <div class="text-2xl font-bold text-blue-600">MetaFit</div>
+  </div>
+
+  <div class="mx-auto hidden md:flex space-x-8 text-sm font-medium">
     <a href="meal.html" class="hover:text-blue-500">Meals</a>
     <a href="workout.html" class="hover:text-blue-500">Workouts</a>
     <a href="mental.html" class="hover:text-blue-500">Mental Health</a>
-    <a href="community.html" class="hover:text-blue-500">Community</a>
-    <a href="weight.html" class="hover:text-blue-500">Weight</a>
+    <a href="community.php" class="hover:text-blue-500">Community</a>
   </div>
-  <div>
-    <img src="https://www.svgrepo.com/show/51234/user.svg" alt="Profile" class="w-8 h-8 rounded-full" />
+
+  <div class="relative flex items-center space-x-4">
+    <img id="profilePic" src="../Logo/user.png" alt="Profile" class="w-9 h-9 rounded-full object-cover cursor-pointer">
+
+    <!-- Dropdown Menu -->
+    <div id="dropdownMenu" class="hidden absolute right-0 mt-24 w-32 bg-white border rounded-md shadow-lg z-50">
+      <button onclick="logout()" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Logout</button>
+    </div>
   </div>
 </nav>
+
+<script>
+  const profilePic = document.getElementById('profilePic');
+  const dropdownMenu = document.getElementById('dropdownMenu');
+
+  profilePic?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    dropdownMenu?.classList.toggle('hidden');
+  });
+
+  document.addEventListener('click', function(event) {
+    if (!dropdownMenu?.contains(event.target)) {
+      dropdownMenu?.classList.add('hidden');
+    }
+  });
+
+  function logout() {
+    window.location.href = './Account/login.html';
+  }
+</script>
 
 <!-- Content -->
 <section class="max-w-5xl mx-auto py-10 px-4">
   <h1 class="text-3xl font-bold mb-6">👥 Community Forum</h1>
   <p class="text-gray-600 mb-6">Connect with others on the same journey as you.</p>
 
-  <div class="bg-white rounded-xl shadow p-6 space-y-4">
-    <div>
-      <h2 class="text-lg font-semibold">📢 Recent Discussions</h2>
-      <ul class="list-disc ml-6 text-gray-700">
-        <li><strong>JaneDoe:</strong> Tips for staying motivated every day?</li>
-        <li><strong>FitGuy23:</strong> What’s your favorite healthy snack?</li>
-        <li><strong>MindfulMama:</strong> Meditation apps that helped me!</li>
-      </ul>
-    </div>
+  <div class="bg-white rounded-xl shadow p-6 space-y-6">
     <div>
       <h2 class="text-lg font-semibold">💬 Share Your Story</h2>
-      <textarea class="w-full border p-2 rounded" rows="4" placeholder="Write something..."></textarea>
-      <button onclick="alert('Post submitted!')" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Post</button>
+      <textarea id="postContent" class="w-full border p-2 rounded" rows="4" placeholder="Write something..."></textarea>
+      <button id="submitPost" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Post</button>
+    </div>
+
+    <div id="postsSection">
+      <h2 class="text-lg font-semibold mt-8">📜 Community Posts</h2>
+      <div id="postsList" class="space-y-4 mt-4"></div>
     </div>
   </div>
 </section>
@@ -49,17 +76,44 @@
 <footer class="text-center py-6 mt-10 bg-white shadow-inner">
   <p class="text-sm">&copy; 2025 MetaFit. All rights reserved.</p>
 </footer>
+
 <script>
-  document.querySelector('button').addEventListener('click', async () => {
-    const content = document.querySelector('textarea').value;
-    await fetch('http://localhost:5000/api/posts', {
+  async function fetchPosts() {
+    const res = await fetch('http://localhost/metafit/api/fetch_posts.php');
+    const posts = await res.json();
+    const postsList = document.getElementById('postsList');
+    postsList.innerHTML = '';
+
+    posts.forEach(post => {
+      const postElement = document.createElement('div');
+      postElement.className = "p-4 border rounded bg-gray-100";
+      postElement.innerHTML = `
+      <div class="font-semibold text-blue-600">${post.username} (${post.email})</div>
+      <div class="text-gray-700 mt-2">${post.content}</div>
+    `;
+      postsList.appendChild(postElement);
+    });
+  }
+
+  document.getElementById('submitPost').addEventListener('click', async () => {
+    const content = document.getElementById('postContent').value.trim();
+    if (content === '') {
+      alert('Please write something before posting.');
+      return;
+    }
+
+    await fetch('http://localhost/metafit/api/submit_post.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: 'Anonymous', content })
+      body: JSON.stringify({ content })
     });
-    alert('Post submitted!');
+
+    document.getElementById('postContent').value = '';
+    await fetchPosts();
   });
 
+  fetchPosts();
 </script>
+
 </body>
 </html>

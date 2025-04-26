@@ -1,39 +1,42 @@
 <?php
+header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
 
-$conn = new mysqli("localhost", "root", "", "metafit");
+$data = json_decode(file_get_contents('php://input'), true);
+
+$name = $data['name'];
+$email = $data['email'];
+$password = $data['password'];
+
+// Connect to DB and insert user
+// Example:
+$conn = new mysqli('localhost', 'root', '', 'metafit');
 if ($conn->connect_error) {
-  http_response_code(500);
-  echo json_encode(["msg" => "Database connection failed"]);
-  exit();
+  echo json_encode(['success' => false, 'message' => 'DB connection failed']);
+  exit;
 }
 
-$data = json_decode(file_get_contents("php://input"), true);
-$name = $conn->real_escape_string($data["name"]);
-$email = $conn->real_escape_string($data["email"]);
-$password = password_hash($data["password"], PASSWORD_BCRYPT);
+$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-// Check if email exists
-$check = $conn->query("SELECT id FROM users WHERE email='$email'");
-if ($check->num_rows > 0) {
-  http_response_code(400);
-  echo json_encode(["msg" => "Email already registered"]);
-  exit();
-}
-
-// Insert new user
 $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
-$stmt->bind_param("sss", $name, $email, $password);
+$stmt->bind_param("sss", $name, $email, $hashedPassword);
 
 if ($stmt->execute()) {
-  echo json_encode(["msg" => "Registration successful"]);
+  echo json_encode(['success' => true, 'message' => 'User registered.']);
 } else {
-  http_response_code(500);
-  echo json_encode(["msg" => "Registration failed"]);
+  echo json_encode(['success' => false, 'message' => 'Email already exists or error.']);
 }
+?>
 
-$stmt->close();
-$conn->close();
+<?php
+session_start();
+
+// After validating user credentials
+$_SESSION['email'] = $email_from_database;
+$_SESSION['username'] = $username_from_database;
+
+// No redirect. Just a success message
+echo json_encode(["success" => true]);
+exit();
 ?>

@@ -9,14 +9,55 @@
 <body class="bg-gray-50 text-gray-800">
 
 <!-- Navbar -->
-<nav class="flex items-center justify-between p-4 bg-white shadow-md">
-    <div class="text-2xl font-bold text-blue-600">MetaFit</div>
+<nav class="relative flex items-center justify-between p-4 bg-white shadow-md sticky top-0 z-50">
+    <!-- Logo (Left) -->
+    <div class="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-3">
+        <img src="./Logo/MetaFit%20Logo.png" alt="MetaFit Logo" class="w-10 h-10">
+        <div class="text-2xl font-bold text-blue-600">MetaFit</div>
+    </div>
+
+    <!-- Navigation Links (Middle) -->
+    <div class="mx-auto hidden md:flex space-x-8 text-sm font-medium">
+        <a href="./Pages/meal.html" class="hover:text-blue-500">Meals</a>
+        <a href="./Pages/workout.html" class="hover:text-blue-500">Workouts</a>
+        <a href="./Pages/mental.html" class="hover:text-blue-500">Mental Health</a>
+        <a href="./Pages/community.html" class="hover:text-blue-500">Community</a>
+    </div>
+
+    <!-- Profile Picture (Right) -->
+    <div class="relative flex items-center space-x-4">
+        <img id="profilePic" src="./Logo/user.png" alt="Profile" class="w-9 h-9 rounded-full object-cover cursor-pointer">
+
+        <!-- Dropdown Menu -->
+        <div id="dropdownMenu" class="hidden absolute right-0 mt-24 w-32 bg-white border rounded-md shadow-lg z-50">
+            <button onclick="logout()" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Logout</button>
+        </div>
+    </div>
 </nav>
+<script>
+    const profilePic = document.getElementById('profilePic');
+    const dropdownMenu = document.getElementById('dropdownMenu');
 
-<!-- Onboarding Section -->
-<!-- Keep the same head and navbar as before -->
+    profilePic.addEventListener('click', (event) => {
+        event.stopPropagation(); // Important! Stop click from bubbling up
+        dropdownMenu.classList.toggle('hidden');
+    });
 
-<!-- Keep existing layout/navbar -->
+    // Clicking anywhere else hides the dropdown
+    document.addEventListener('click', function(event) {
+        if (!dropdownMenu.contains(event.target)) {
+            dropdownMenu.classList.add('hidden');
+        }
+    });
+
+    // Logout function
+    function logout() {
+        window.location.href = './Account/login.html';
+    }
+</script>
+
+
+
 
 <section class="max-w-xl mx-auto p-8 mt-10 bg-white rounded-2xl shadow">
     <h1 class="text-3xl font-semibold text-center mb-6">👋 Welcome to MetaFit</h1>
@@ -63,10 +104,8 @@
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-
-
-
     const mealDatabase = [
         { name: "Grilled Chicken Salad", calories: 400 },
         { name: "Oatmeal with Berries", calories: 350 },
@@ -88,6 +127,14 @@
     }
 
     function submitData() {
+        const email = localStorage.getItem("userEmail"); // Move this to the top!
+
+        if (!email) {
+            alert("No email found. Please register or log in again.");
+            window.location.href = "./Account/register.html";
+            return;
+        }
+
         const dob = document.getElementById('dob').value;
         const age = calculateAge(dob);
         const weight = +document.getElementById('weight').value;
@@ -110,6 +157,31 @@
         document.getElementById('currentCal').textContent = calCurrent;
         document.getElementById('targetCal').textContent = calTarget;
 
+        const payload = {
+            email: email,
+            dob: dob,
+            age: age,
+            height: height,
+            weight: weight,
+            targetWeight: targetWeight,
+            activityLevel: activity,
+            calorieCurrent: calCurrent,
+            calorieTarget: calTarget
+        };
+
+        fetch('http://localhost/metafit/api/user-profile.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("✅ Saved to PHP:", data);
+            })
+            .catch(err => {
+                console.error("❌ Failed to save:", err);
+            });
+
         const mealSuggestions = mealDatabase
             .filter(meal => meal.calories <= calTarget / 3)
             .slice(0, 3);
@@ -124,42 +196,8 @@
 
         drawProjectionChart(weight, targetWeight);
         document.getElementById('result').classList.remove('hidden');
-
-        const payload = {
-            email: email, // added here
-            dob: document.getElementById('dob').value,
-            age: age,
-            height: +document.getElementById('height').value,
-            weight: +document.getElementById('weight').value,
-            targetWeight: +document.getElementById('target').value,
-            activityLevel: +document.getElementById('activity').value,
-            calorieCurrent: calCurrent,
-            calorieTarget: calTarget
-        };
-
-
-        const email = localStorage.getItem("userEmail");
-        if (!email) {
-            alert("No email found. Please register or log in again.");
-            window.location.href = "register.html";
-            return;
-        }
-
-        fetch('http://localhost/metafit/api/update_user_profile.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log("✅ Saved to PHP:", data);
-            })
-            .catch(err => {
-                console.error("❌ Failed to save:", err);
-            });
-
-
     }
+
 
     function drawProjectionChart(current, target) {
         const weeks = Math.ceil(Math.abs(current - target) / 0.5);
@@ -196,9 +234,6 @@
             }
         });
     }
-
-
-
 </script>
 
 </body>

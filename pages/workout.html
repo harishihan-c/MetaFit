@@ -9,19 +9,52 @@
 <body class="bg-gray-50 text-gray-800">
 
 <!-- Navbar -->
-<nav class="flex items-center justify-between p-4 bg-white shadow-md sticky top-0 z-50">
-  <div class="text-2xl font-bold text-blue-600"><a href="../index.html">MetaFit</a></div>
-  <div class="hidden md:flex space-x-6 text-sm font-medium">
+<nav class="relative flex items-center justify-between p-4 bg-white shadow-md sticky top-0 z-50">
+  <!-- Logo (Left) -->
+  <div class="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-3">
+    <img src="../Logo/MetaFit%20Logo.png" alt="MetaFit Logo" class="w-10 h-10">
+    <div class="text-2xl font-bold text-blue-600">MetaFit</div>
+  </div>
+
+  <!-- Navigation Links (Middle) -->
+  <div class="mx-auto hidden md:flex space-x-8 text-sm font-medium">
     <a href="meal.html" class="hover:text-blue-500">Meals</a>
     <a href="workout.html" class="hover:text-blue-500">Workouts</a>
     <a href="mental.html" class="hover:text-blue-500">Mental Health</a>
     <a href="community.html" class="hover:text-blue-500">Community</a>
-    <a href="weight.html" class="hover:text-blue-500">Weight</a>
   </div>
-  <div>
-    <img src="https://www.svgrepo.com/show/51234/user.svg" alt="Profile" class="w-8 h-8 rounded-full" />
+
+  <!-- Profile Picture (Right) -->
+  <div class="relative flex items-center space-x-4">
+    <img id="profilePic" src="../Logo/user.png" alt="Profile" class="w-9 h-9 rounded-full object-cover cursor-pointer">
+
+    <!-- Dropdown Menu -->
+    <div id="dropdownMenu" class="hidden absolute right-0 mt-24 w-32 bg-white border rounded-md shadow-lg z-50">
+      <button onclick="logout()" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Logout</button>
+    </div>
   </div>
 </nav>
+<script>
+  const profilePic = document.getElementById('profilePic');
+  const dropdownMenu = document.getElementById('dropdownMenu');
+
+  profilePic.addEventListener('click', (event) => {
+    event.stopPropagation(); // Important! Stop click from bubbling up
+    dropdownMenu.classList.toggle('hidden');
+  });
+
+  // Clicking anywhere else hides the dropdown
+  document.addEventListener('click', function(event) {
+    if (!dropdownMenu.contains(event.target)) {
+      dropdownMenu.classList.add('hidden');
+    }
+  });
+
+  // Logout function
+  function logout() {
+    window.location.href = './Account/login.html';
+  }
+</script>
 
 <!-- Content -->
 <section class="max-w-6xl mx-auto py-10 px-4">
