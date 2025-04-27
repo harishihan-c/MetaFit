@@ -2,41 +2,50 @@
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Methods: POST");
 
-$data = json_decode(file_get_contents('php://input'), true);
-
-$name = $data['name'];
-$email = $data['email'];
-$password = $data['password'];
-
-// Connect to DB and insert user
-// Example:
+// Connect to DB
 $conn = new mysqli('localhost', 'root', '', 'metafit');
 if ($conn->connect_error) {
   echo json_encode(['success' => false, 'message' => 'DB connection failed']);
   exit;
 }
 
-$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+// Get incoming data
+$data = json_decode(file_get_contents('php://input'), true);
+if (!$data || !isset($data['name'], $data['email'], $data['password'])) {
+  echo json_encode(['success' => false, 'message' => 'Invalid input']);
+  exit;
+}
 
+$name = $conn->real_escape_string($data['name']);
+$email = $conn->real_escape_string($data['email']);
+$password = password_hash($data['password'], PASSWORD_DEFAULT);
+
+// Check if email already exists
+$check = $conn->prepare("SELECT id FROM users WHERE email = ?");
+$check->bind_param("s", $email);
+$check->execute();
+$check->store_result();
+
+if ($check->num_rows > 0) {
+  echo json_encode(['success' => false, 'message' => 'Email already exists']);
+  $check->close();
+  $conn->close();
+  exit;
+}
+$check->close();
+
+// Insert new user
 $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
-$stmt->bind_param("sss", $name, $email, $hashedPassword);
+$stmt->bind_param("sss", $name, $email, $password);
 
 if ($stmt->execute()) {
-  echo json_encode(['success' => true, 'message' => 'User registered.']);
+  echo json_encode(['success' => true, 'message' => 'User registered']);
 } else {
-  echo json_encode(['success' => false, 'message' => 'Email already exists or error.']);
+  echo json_encode(['success' => false, 'message' => 'Registration failed']);
 }
-?>
 
-<?php
-session_start();
-
-// After validating user credentials
-$_SESSION['email'] = $email_from_database;
-$_SESSION['username'] = $username_from_database;
-
-// No redirect. Just a success message
-echo json_encode(["success" => true]);
-exit();
+$stmt->close();
+$conn->close();
 ?>
